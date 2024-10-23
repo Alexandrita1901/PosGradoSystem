@@ -5,88 +5,82 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import FCA.Sistema.Web.DTO.TipoProgramaRequest;
-import FCA.Sistema.Web.Entity.TipoPrograma;
+import org.springframework.security.access.prepost.PreAuthorize;
+import FCA.Sistema.Web.DTO.TipoPagoRequest;
+import FCA.Sistema.Web.Entity.TipoPago;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
-import FCA.Sistema.Web.Service.TipoProgramaService;
+import FCA.Sistema.Web.Service.TipoPagoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/tipoprograma")
+@RequestMapping("/tipopago")
 @RequiredArgsConstructor
-public class TipoProgramaController {
+public class TipoPagoController {
 
-    private final TipoProgramaService tipoProgramaService;
-	private final UserRepository userRepository;
+    private final TipoPagoService tipoPagoService;
+    private final UserRepository userRepository;
 	private final PermisoService permisoService;
 	
-
     @PostMapping("/crear")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<String> crearTipoPrograma(@RequestBody TipoProgramaRequest request, Principal principal) {
+    public ResponseEntity<String> crearTipoPago(@RequestBody TipoPagoRequest request, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
 		if (!permisoService.tienePermisoCrear(usuarioLogueado)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para crear.");
 		}
-
-        return tipoProgramaService.crearTipoPrograma(request);
+        return tipoPagoService.crearTipoPago(request);
     }
 
     @GetMapping("/listar")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<List<TipoPrograma>> listarTiposPrograma(Principal principal) {
+    public ResponseEntity<List<TipoPago>> listarTiposPago(Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
 		if (!permisoService.tienePermisoListar(usuarioLogueado)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
-        return tipoProgramaService.listarTiposPrograma();
+        return tipoPagoService.listarTiposPago();
     }
 
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<TipoPrograma> obtenerTipoProgramaPorId(@PathVariable Integer id,  Principal principal) {
+    public ResponseEntity<TipoPago> obtenerTipoPagoPorId(@PathVariable Integer id, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
 		if (!permisoService.tienePermisoListar(usuarioLogueado)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
 		}
-        return tipoProgramaService.obtenerTipoProgramaPorId(id);
+        return tipoPagoService.obtenerTipoPagoPorId(id);
     }
 
- 
     @PutMapping("/actualizar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<String> actualizarTipoPrograma(@PathVariable Integer id, @RequestBody TipoProgramaRequest request,  Principal principal) {
+    public ResponseEntity<String> actualizarTipoPago(@PathVariable Integer id, @RequestBody TipoPagoRequest request, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
 		if (!permisoService.tienePermisoEditar(usuarioLogueado)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para editar.");
 		}
-
-    	return tipoProgramaService.actualizarTipoPrograma(id, request);
+    	return tipoPagoService.actualizarTipoPago(id, request);
     }
 
     @DeleteMapping("/eliminar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<String> eliminarTipoPrograma(@PathVariable Integer id,  Principal principal) {
+    public ResponseEntity<String> eliminarTipoPago(@PathVariable Integer id, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
 		if (!permisoService.tienePermisoEliminar(usuarioLogueado)) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para eliminar.");
 		}
-        return tipoProgramaService.eliminarTipoPrograma(id);
+        return tipoPagoService.eliminarTipoPago(id);
     }
 }
-
-

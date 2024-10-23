@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.TipoProgramaRequest;
 import FCA.Sistema.Web.Entity.TipoPrograma;
+
 import FCA.Sistema.Web.Repository.TipoProgramaRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class TipoProgramaService {
 
     private final TipoProgramaRepository tipoProgramaRepository;
+ 
 
     // Crear un nuevo Tipo de Programa
     public ResponseEntity<String> crearTipoPrograma(TipoProgramaRequest request) {

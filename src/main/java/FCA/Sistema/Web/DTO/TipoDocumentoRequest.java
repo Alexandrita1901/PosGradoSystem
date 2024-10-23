@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
-	 private String username;
-	 private String password;
-	 private String token;
+@AllArgsConstructor
+public class TipoDocumentoRequest {
+	 private String tipoDocumento;
+	 private String descripcion;
 }

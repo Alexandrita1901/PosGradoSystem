@@ -22,18 +22,22 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authProvider;
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authRequest -> authRequest
-				.requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-				.requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
-				.requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-				.requestMatchers("//tipoprograma/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-				.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
-				.sessionManagement(
-						sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.authenticationProvider(authProvider)
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
-	}
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authRequest -> authRequest
+            .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+            .requestMatchers("/tipopago/**").hasAuthority("SUPERADMIN")
+            .requestMatchers("/tipodocumento/**").hasAuthority("SUPERADMIN")
+            .requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
+            .requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+            .requestMatchers("/tipoprograma/**").hasAnyAuthority("SUPERADMIN")  // Verifica que aquí esté correcto
+            .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN")  // Debes tener este matcher
+            .requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+            .sessionManagement(
+                sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(authProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+    }
+
 }
 

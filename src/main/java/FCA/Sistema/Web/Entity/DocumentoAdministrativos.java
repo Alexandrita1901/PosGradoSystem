@@ -1,6 +1,5 @@
 package FCA.Sistema.Web.Entity;
 
-import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,20 +29,17 @@ public class DocumentoAdministrativos {
     @JoinColumn(name = "tipo_documento_id", nullable = false)
     private TipoDocumento tipoDocumento;  // Relación con TipoDocumento
 
-    @Column(nullable = false)
-    private String titulo;  // Título o nombre del documento (ej. "Resolución 123/2024")
-
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String descripcion;  // Descripción del documento
-
-    @Column(nullable = false)
-    private String urlDocumento;  // URL o ubicación del archivo
-
-    @Column(nullable = false)
-    private LocalDate fechaCreacion;  // Fecha de creación del documento
-
     @ManyToOne
     @JoinColumn(name = "unidad_id", nullable = false)
-    private UnidadPosgrado unidadPosgrado;  // Unidad de Posgrado a la que pertenece el documento
+    private UnidadPosgrado unidadPosgrado;  // Relación con la unidad administrativa
+
+    @Column(nullable = false)
+    private String titulo;  // Título del documento administrativo
+
+    @Column(nullable = false)
+    private String urlDocumento;  // URL o ubicación del documento subido
+
+    @Column(nullable = false)
+    private Boolean validado;  // Estado de validación del documento
 }
 

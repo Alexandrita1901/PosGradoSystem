@@ -4,8 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,22 +18,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "tipo_documento")
 public class TipoDocumento {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(nullable = false)
-    private String tipoDocumento;  // Ej. "Título Profesional", "Certificado de Estudios", "DNI", "Recibo de Inscripción", etc.
-
-    @Column(nullable = true)
-    private Boolean validado;  // Estado de validación (aprobado, pendiente, etc.)
+    private String tipoDocumento;  // Ej. "Título Profesional", "Certificado de Estudios", "Carta", "Acta", etc.
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    private String descripcion;  // Para cualquier descripcion sobre el documento
-
-    // Relación ManyToOne con Estudiantes
-    @ManyToOne
-    @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiantes estudiante; // Cada documento pertenece a un estudiante
+    private String descripcion;  // Descripción general sobre el tipo de documento
 }
 

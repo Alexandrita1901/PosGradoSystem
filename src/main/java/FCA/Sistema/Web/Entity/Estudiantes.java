@@ -25,7 +25,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "estudiantes")
 public class Estudiantes {
 
-	   @Id
+
+	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Integer id;
 
@@ -70,27 +71,24 @@ public class Estudiantes {
 
 	    @Column(nullable = true)
 	    private String cargoLaboralIndependiente;
-	    
+
 	    @Column(nullable = false)
 	    private String estadoEstudiante;
-	    
+
 	    @Column(nullable = false)
 	    private LocalDate fechaInscripcion;
-	    
+
 	    @Column(nullable = true)
 	    private String urlFotografia;
-	    
-	    @Column(nullable = true)
-	    private String rutaDocumento;  // Ruta o URL donde se guarda el documento
 
 	    @ManyToOne
 	    @JoinColumn(name = "id_programa_estudio", nullable = false)
 	    private ProgramaEstudio programaEstudio;
 
-	    // Relación OneToMany con TpoDocumento
+	    // Relación OneToMany con DocumentoEstudiante
 	    @OneToMany(mappedBy = "estudiante")
-	    private List<TipoDocumento> documentos;  // Un estudiante puede tener varios documentos
-	
+	    private List<DocumentoEstudiante> documentos;  // Un estudiante puede tener varios documentos subidos
+
 	    @ManyToOne
 	    @JoinColumn(name = "semestre_ingreso_id", nullable = false)
 	    private Semestre semestreIngreso;  // Semestre en el que el estudiante ingresó
@@ -99,7 +97,6 @@ public class Estudiantes {
 	    @JoinColumn(name = "semestre_actual_id", nullable = false)
 	    private Semestre semestreActual;  // Semestre en el que está actualmente el estudiante
 
-
 	    @OneToMany(mappedBy = "estudiante")
 	    private List<Pago> pagos;  // Lista de pagos del estudiante
 
@@ -107,6 +104,6 @@ public class Estudiantes {
 	    private Boolean activo;  // Indica si el estudiante sigue activo en el programa
 
 	    @Column(nullable = false)
-	    private Integer totalSemestres; // Duración del programa, en número de semestres (ej. 3 semestres)
+	    private Integer totalSemestres;  // Duración del programa, en número de semestres (ej. 3 semestres)
+	}
 
-}

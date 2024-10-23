@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminRequest {
-	String username;
-	String password;
-	String nombres;
-	String apellidos;
-	String correo;
-	String contacto;
-	String dni;
-	Integer unidadPosgradoId;
+	 private String username;
+	 private String password;
+	 private String nombres;
+	 private String apellidos;
+	 private String correo;
+	 private String contacto;
+	 private String dni;
+	 private Integer unidadPosgradoId;
 	@Builder.Default
 	boolean permisoCrear = true;
 	@Builder.Default

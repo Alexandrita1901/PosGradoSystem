@@ -36,7 +36,7 @@ public class Semestre {
     @Column(nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDate fechaFin;
 
     @OneToMany(mappedBy = "semestre")
