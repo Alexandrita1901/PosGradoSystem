@@ -28,7 +28,6 @@ public class EstudianteResponse {
     private String telefonoLaboralDependiente;
     private String sectorLaboralIndependiente;
     private String cargoLaboralIndependiente;
-    private String estadoEstudiante;
     private LocalDate fechaInscripcion;
     private String urlFotografia;
     private Boolean activo;
