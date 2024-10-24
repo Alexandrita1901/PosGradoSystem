@@ -28,15 +28,16 @@ public class HistorialSemestre {
 
     @ManyToOne
     @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiantes estudiante;  // El estudiante asociado
+    private Estudiantes estudiante;  // Relación con el estudiante
 
     @ManyToOne
     @JoinColumn(name = "semestre_id", nullable = false)
-    private Semestre semestre;  // El semestre en que estuvo inscrito
+    private Semestre semestre;  // Relación con el semestre en el que estuvo inscrito
 
     @Column(nullable = false)
-    private LocalDate fechaInicio;
+    private LocalDate fechaInicio;  // Fecha de inicio del semestre
 
     @Column(nullable = true)
-    private LocalDate fechaFin;  // Solo si ya terminó el semestre
+    private LocalDate fechaFin;  // Fecha de fin del semestre, si ya terminó
 }
+

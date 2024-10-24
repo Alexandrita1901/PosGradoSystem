@@ -55,7 +55,6 @@ public class EstudiantesService {
 	                .telefonoLaboralDependiente(request.getTelefonoLaboralDependiente())
 	                .sectorLaboralIndependiente(request.getSectorLaboralIndependiente())
 	                .cargoLaboralIndependiente(request.getCargoLaboralIndependiente())
-	                .estadoEstudiante(request.getEstadoEstudiante())
 	                .fechaInscripcion(request.getFechaInscripcion())
 	                .urlFotografia(request.getUrlFotografia())
 	                .programaEstudio(programaEstudioOpt.get())
@@ -69,31 +68,48 @@ public class EstudiantesService {
 	        return ResponseEntity.ok("Estudiante creado exitosamente.");
 	    }
 
-	    // Listar estudiantes (USER y ADMIN según su unidad, SUPERADMIN todos)
 	    public ResponseEntity<List<EstudianteResponse>> listarEstudiantes(User usuarioLogueado) {
 	        List<Estudiantes> estudiantes;
 
+	        // SUPERADMIN puede listar todos, ADMIN y USER solo de su unidad
 	        if ("SUPERADMIN".equals(usuarioLogueado.getRole().getName())) {
 	            estudiantes = estudianteRepository.findAll();
 	        } else {
 	            estudiantes = estudianteRepository.findByProgramaEstudioUnidadPosgrado(usuarioLogueado.getUnidadPosgrado());
 	        }
 
+	        // Mapear la lista de entidades a DTOs
 	        List<EstudianteResponse> response = estudiantes.stream()
-	                .map(estudiante -> EstudianteResponse.builder()
-	                        .id(estudiante.getId())
-	                        .nombres(estudiante.getNombres())
-	                        .apellidos(estudiante.getApellidos())
-	                        .email(estudiante.getEmail())
-	                        .documentoIdentidad(estudiante.getDocumentoIdentidad())
-	                        .telefono(estudiante.getTelefono())
-	                        .estadoEstudiante(estudiante.getEstadoEstudiante())
-	                        .programaEstudioNombre(estudiante.getProgramaEstudio().getNombre())
-	                        .build())
-	                .collect(Collectors.toList());
+	            .map(estudiante -> EstudianteResponse.builder()
+	                .id(estudiante.getId())
+	                .nombres(estudiante.getNombres())
+	                .apellidos(estudiante.getApellidos())
+	                .email(estudiante.getEmail())
+	                .documentoIdentidad(estudiante.getDocumentoIdentidad())
+	                .telefono(estudiante.getTelefono())
+	                .direccion(estudiante.getDireccion())
+	                .ultimoGradoAcademico(estudiante.getUltimoGradoAcademico())
+	                .universidadProcedencia(estudiante.getUniversidadProcedencia())
+	                .entidadLaboralDependiente(estudiante.getEntidadLaboralDependiente())
+	                .cargoLaboralDependiente(estudiante.getCargoLaboralDependiente())
+	                .direccionLaboralDependiente(estudiante.getDireccionLaboralDependiente())
+	                .telefonoLaboralDependiente(estudiante.getTelefonoLaboralDependiente())
+	                .sectorLaboralIndependiente(estudiante.getSectorLaboralIndependiente())
+	                .cargoLaboralIndependiente(estudiante.getCargoLaboralIndependiente())
+	                .fechaInscripcion(estudiante.getFechaInscripcion())
+	                .urlFotografia(estudiante.getUrlFotografia())
+	                .activo(estudiante.getActivo())
+	                .programaEstudioId(estudiante.getProgramaEstudio().getId())  // ID del programa de estudio
+	                .semestreIngresoId(estudiante.getSemestreIngreso().getId())  // ID del semestre de ingreso
+	                .semestreActualId(estudiante.getSemestreActual().getId())    // ID del semestre actual
+	                .totalSemestres(estudiante.getTotalSemestres())
+	                .programaEstudioNombre(estudiante.getProgramaEstudio().getNombre())  // Nombre del programa de estudio
+	                .build())
+	            .collect(Collectors.toList());
 
 	        return ResponseEntity.ok(response);
 	    }
+
 
 	    // Obtener un estudiante por ID
 	    public ResponseEntity<EstudianteResponse> obtenerEstudiantePorId(Integer id, User usuarioLogueado) {
@@ -114,7 +130,6 @@ public class EstudiantesService {
 	                    .email(estudiante.getEmail())
 	                    .documentoIdentidad(estudiante.getDocumentoIdentidad())
 	                    .telefono(estudiante.getTelefono())
-	                    .estadoEstudiante(estudiante.getEstadoEstudiante())
 	                    .programaEstudioNombre(estudiante.getProgramaEstudio().getNombre())
 	                    .build();
 
@@ -140,7 +155,6 @@ public class EstudiantesService {
 	            estudianteExistente.setEmail(request.getEmail());
 	            estudianteExistente.setDocumentoIdentidad(request.getDocumentoIdentidad());
 	            estudianteExistente.setTelefono(request.getTelefono());
-	            estudianteExistente.setEstadoEstudiante(request.getEstadoEstudiante());
 
 	            estudianteRepository.save(estudianteExistente);
 	            return ResponseEntity.ok("Estudiante actualizado exitosamente.");

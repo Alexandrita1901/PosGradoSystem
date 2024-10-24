@@ -27,10 +27,10 @@ public class EstudianteRequest {
     private String telefonoLaboralDependiente;
     private String sectorLaboralIndependiente;
     private String cargoLaboralIndependiente;
-    private String estadoEstudiante;
     private LocalDate fechaInscripcion;
     private String urlFotografia;
-    private Boolean activo;
+    @Builder.Default
+    private Boolean activo = true;
     private Integer programaEstudioId;  
     private Integer semestreIngresoId;  
     private Integer semestreActualId; 

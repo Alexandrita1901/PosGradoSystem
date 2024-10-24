@@ -34,8 +34,9 @@ public class DocumentoEstudiante {
 
 	    @Column(nullable = false)
 	    private String urlDocumento;  // URL o ubicación del documento subido
-
+	    
+	    @Builder.Default
 	    @Column(nullable = false)
-	    private Boolean validado;  // Estado de validación del documento
+	    private Boolean validado = false;  // Estado de validación del documento
 	}
 
