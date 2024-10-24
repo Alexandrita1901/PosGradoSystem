@@ -1,6 +1,7 @@
 package FCA.Sistema.Web.Service;
 
 import FCA.Sistema.Web.DTO.UserRequest;
+import FCA.Sistema.Web.DTO.UserResponse;
 import FCA.Sistema.Web.Entity.Permiso;
 import FCA.Sistema.Web.Entity.Role;
 import FCA.Sistema.Web.Entity.UnidadPosgrado;
@@ -68,31 +69,56 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<List<User>> listarUsuarios(User usuarioLogueado) {
-		List<User> usuarios;
+	public ResponseEntity<List<UserResponse>> listarUsuarios(User usuarioLogueado) {
+	    List<User> usuarios;
+	    if (usuarioLogueado.getRole().getName().equals("SUPERADMIN")) {
+	        usuarios = userRepository.findAll();
+	    } else {
+	        usuarios = userRepository.findByUnidadPosgrado(usuarioLogueado.getUnidadPosgrado());
+	    }
 
-		if (usuarioLogueado.getRole().getName().equals("SUPERADMIN")) {
-			usuarios = userRepository.findAll();
-		} else {
-			usuarios = userRepository.findByUnidadPosgrado(usuarioLogueado.getUnidadPosgrado());
-		}
+	    // Convertir la lista de User a UserResponse
+	    List<UserResponse> usuariosResponse = usuarios.stream().map(usuario -> UserResponse.builder()
+	        .id(usuario.getId())
+	        .username(usuario.getUsername())
+	        .nombres(usuario.getNombres())
+	        .apellidos(usuario.getApellidos())
+	        .correo(usuario.getCorreo())
+	        .contacto(usuario.getContacto())
+	        .roleName(usuario.getRole().getName())
+	        // Aquí ajustamos para que solo incluya el nombre de la unidad
+	        .unidadPosgrado(usuario.getUnidadPosgrado() != null ? usuario.getUnidadPosgrado().getNombre() : null)
+	        .build()).toList();
 
-		return ResponseEntity.ok(usuarios);
+	    return ResponseEntity.ok(usuariosResponse);
 	}
 
+	public ResponseEntity<UserResponse> obtenerUsuarioPorId(Integer id, User usuarioLogueado) {
+	    Optional<User> usuarioOpt = userRepository.findById(id);
+	    if (usuarioOpt.isPresent()) {
+	        User usuario = usuarioOpt.get();
+	        if (usuarioLogueado.getRole().getName().equals("ADMIN")
+	                && !usuarioLogueado.getUnidadPosgrado().equals(usuario.getUnidadPosgrado())) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+	        }
 
-	public ResponseEntity<User> obtenerUsuarioPorId(Integer id, User usuarioLogueado) {
-		Optional<User> usuarioOpt = userRepository.findById(id);
-		if (usuarioOpt.isPresent()) {
-			User usuario = usuarioOpt.get();
-			if (usuarioLogueado.getRole().getName().equals("ADMIN")
-					&& !usuarioLogueado.getUnidadPosgrado().equals(usuario.getUnidadPosgrado())) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-			}
-			return ResponseEntity.ok(usuario);
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+	        // Convertir el User a UserResponse
+	        UserResponse usuarioResponse = UserResponse.builder()
+	            .id(usuario.getId())
+	            .username(usuario.getUsername())
+	            .nombres(usuario.getNombres())
+	            .apellidos(usuario.getApellidos())
+	            .correo(usuario.getCorreo())
+	            .contacto(usuario.getContacto())
+	            .roleName(usuario.getRole().getName())
+	            // Solo obtenemos el nombre de la unidad
+	            .unidadPosgrado(usuario.getUnidadPosgrado() != null ? usuario.getUnidadPosgrado().getNombre() : null)
+	            .build();
+
+	        return ResponseEntity.ok(usuarioResponse);
+	    } else {
+	        return ResponseEntity.notFound().build();
+	    }
 	}
 
 

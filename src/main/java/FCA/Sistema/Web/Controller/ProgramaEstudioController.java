@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import FCA.Sistema.Web.DTO.ProgramaEstudioRequest;
-import FCA.Sistema.Web.Entity.ProgramaEstudio;
+import FCA.Sistema.Web.DTO.ProgramaEstudioResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.ProgramaEstudioService;
@@ -29,23 +29,20 @@ public class ProgramaEstudioController {
     @PostMapping("/crear")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
     public ResponseEntity<String> crearProgramaEstudio(@RequestBody ProgramaEstudioRequest request, Principal principal) {
-        // Obtener usuario logueado
         User usuarioLogueado = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
-        // Verificar permisos
         if (!permisoService.tienePermisoCrear(usuarioLogueado)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para crear.");
         }
 
-        // Crear el programa de estudio
         return programaEstudioService.crearProgramaEstudio(request, usuarioLogueado);
     }
 
     // Listar todos los programas de estudio
     @GetMapping("/listar")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-    public ResponseEntity<List<ProgramaEstudio>> listarProgramasEstudio(Principal principal) {
+    public ResponseEntity<List<ProgramaEstudioResponse>> listarProgramasEstudio(Principal principal) {
         User usuarioLogueado = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -53,13 +50,13 @@ public class ProgramaEstudioController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
-        return programaEstudioService.listarProgramasEstudio();
+        return programaEstudioService.listarProgramasEstudio(usuarioLogueado);
     }
 
     // Obtener un programa de estudio por ID
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-    public ResponseEntity<ProgramaEstudio> obtenerProgramaEstudioPorId(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<ProgramaEstudioResponse> obtenerProgramaEstudioPorId(@PathVariable Integer id, Principal principal) {
         User usuarioLogueado = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -70,7 +67,7 @@ public class ProgramaEstudioController {
         return programaEstudioService.obtenerProgramaEstudioPorId(id);
     }
 
-    // Actualizar un programa de estudio
+    // Actualizar un programa de estudio.
     @PutMapping("/actualizar/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
     public ResponseEntity<String> actualizarProgramaEstudio(@PathVariable Integer id,

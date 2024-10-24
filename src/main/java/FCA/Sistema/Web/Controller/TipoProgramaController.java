@@ -2,13 +2,13 @@ package FCA.Sistema.Web.Controller;
 
 import java.security.Principal;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import FCA.Sistema.Web.DTO.TipoProgramaRequest;
-import FCA.Sistema.Web.Entity.TipoPrograma;
+import FCA.Sistema.Web.DTO.TipoProgramaResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
@@ -23,7 +23,6 @@ public class TipoProgramaController {
     private final TipoProgramaService tipoProgramaService;
 	private final UserRepository userRepository;
 	private final PermisoService permisoService;
-	
 
     @PostMapping("/crear")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
@@ -40,7 +39,7 @@ public class TipoProgramaController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<List<TipoPrograma>> listarTiposPrograma(Principal principal) {
+    public ResponseEntity<List<TipoProgramaResponse>> listarTiposPrograma(Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -52,7 +51,7 @@ public class TipoProgramaController {
 
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<TipoPrograma> obtenerTipoProgramaPorId(@PathVariable Integer id,  Principal principal) {
+    public ResponseEntity<TipoProgramaResponse> obtenerTipoProgramaPorId(@PathVariable Integer id,  Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -62,7 +61,6 @@ public class TipoProgramaController {
         return tipoProgramaService.obtenerTipoProgramaPorId(id);
     }
 
- 
     @PutMapping("/actualizar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
     public ResponseEntity<String> actualizarTipoPrograma(@PathVariable Integer id, @RequestBody TipoProgramaRequest request,  Principal principal) {
@@ -88,5 +86,3 @@ public class TipoProgramaController {
         return tipoProgramaService.eliminarTipoPrograma(id);
     }
 }
-
-

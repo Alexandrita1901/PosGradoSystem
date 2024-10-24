@@ -15,8 +15,9 @@ public class ProgramaEstudioRequest {
 	private Integer duracionMeses;
 	private Integer inversion;
 	private String modalidad;
-	private Boolean activo;
 	private String descripcion;
+	@Builder.Default
+	private Boolean activo = true;
 	private String urlPlanEstudio;
 	private Integer tipoProgramaId; // ID del tipo de programa asociado
 	private Integer unidadPosgradoId; // Opcional, se usará solo por el SUPERADMIN

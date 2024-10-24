@@ -2,11 +2,14 @@ package FCA.Sistema.Web.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.ProgramaEstudioRequest;
+import FCA.Sistema.Web.DTO.ProgramaEstudioResponse;
 import FCA.Sistema.Web.Entity.ProgramaEstudio;
 import FCA.Sistema.Web.Entity.TipoPrograma;
 import FCA.Sistema.Web.Entity.UnidadPosgrado;
@@ -35,7 +38,7 @@ public class ProgramaEstudioService {
         UnidadPosgrado unidadPosgrado;
 
         // Verificar si el usuario es Admin o SuperAdmin
-        if (usuarioLogueado.getRole().getName().equals("SUPERADMIN")) {
+        if ("SUPERADMIN".equals(usuarioLogueado.getRole().getName())) {
             // Si es SuperAdmin, se requiere unidad de posgrado manual
             if (request.getUnidadPosgradoId() == null) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La unidad de posgrado es requerida para el SUPERADMIN.");
@@ -43,9 +46,11 @@ public class ProgramaEstudioService {
 
             unidadPosgrado = unidadPosgradoRepository.findById(request.getUnidadPosgradoId())
                     .orElseThrow(() -> new RuntimeException("Unidad de Posgrado no encontrada."));
-        } else {
+        } else if ("ADMIN".equals(usuarioLogueado.getRole().getName())) {
             // El Admin solo puede crear programas en su propia unidad
             unidadPosgrado = usuarioLogueado.getUnidadPosgrado();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para crear programas de estudio.");
         }
 
         // Crear el programa de estudio
@@ -55,7 +60,6 @@ public class ProgramaEstudioService {
                 .duracionMeses(request.getDuracionMeses())
                 .inversion(request.getInversion())
                 .modalidad(request.getModalidad())
-                .activo(request.getActivo())
                 .descripcion(request.getDescripcion())
                 .urlPlanEstudio(request.getUrlPlanEstudio())
                 .unidadPosgrado(unidadPosgrado)
@@ -67,17 +71,63 @@ public class ProgramaEstudioService {
         return ResponseEntity.ok("Programa de estudio creado exitosamente.");
     }
 
-    // Obtener todos los programas de estudio
-    public ResponseEntity<List<ProgramaEstudio>> listarProgramasEstudio() {
-        List<ProgramaEstudio> programas = programaEstudioRepository.findAll();
-        return ResponseEntity.ok(programas);
+    // Listar todos los programas de estudio con restricción para Admins
+    public ResponseEntity<List<ProgramaEstudioResponse>> listarProgramasEstudio(User usuarioLogueado) {
+        List<ProgramaEstudio> programas;
+
+        // Si el usuario es SUPERADMIN, listar todos los programas
+        if ("SUPERADMIN".equals(usuarioLogueado.getRole().getName())) {
+            programas = programaEstudioRepository.findAll();
+        } else if ("ADMIN".equals(usuarioLogueado.getRole().getName())) {
+            // Si el usuario es ADMIN, listar solo los programas de su unidad
+            programas = programaEstudioRepository.findByUnidadPosgrado(usuarioLogueado.getUnidadPosgrado());
+        } else {
+            // Si el usuario no tiene permisos, denegar el acceso
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        // Convertir la lista de entidades a DTOs
+        List<ProgramaEstudioResponse> programaEstudioResponses = programas.stream()
+            .map(programa -> ProgramaEstudioResponse.builder()
+                .id(programa.getId())
+                .nombre(programa.getNombre())
+                .creditos(programa.getCreditos())
+                .duracionMeses(programa.getDuracionMeses())
+                .inversion(programa.getInversion())
+                .modalidad(programa.getModalidad())
+                .activo(programa.getActivo())
+                .descripcion(programa.getDescripcion())
+                .urlPlanEstudio(programa.getUrlPlanEstudio())
+                .unidadPosgradoNombre(programa.getUnidadPosgrado().getNombre())
+                .tipoProgramaNombre(programa.getTipoPrograma().getNombreprograma())
+                .build())
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(programaEstudioResponses);
     }
 
     // Obtener un programa de estudio por ID
-    public ResponseEntity<ProgramaEstudio> obtenerProgramaEstudioPorId(Integer id) {
+    public ResponseEntity<ProgramaEstudioResponse> obtenerProgramaEstudioPorId(Integer id) {
         Optional<ProgramaEstudio> programaOpt = programaEstudioRepository.findById(id);
         if (programaOpt.isPresent()) {
-            return ResponseEntity.ok(programaOpt.get());
+            ProgramaEstudio programa = programaOpt.get();
+
+            // Convertir la entidad a DTO
+            ProgramaEstudioResponse programaResponse = ProgramaEstudioResponse.builder()
+                .id(programa.getId())
+                .nombre(programa.getNombre())
+                .creditos(programa.getCreditos())
+                .duracionMeses(programa.getDuracionMeses())
+                .inversion(programa.getInversion())
+                .modalidad(programa.getModalidad())
+                .activo(programa.getActivo())
+                .descripcion(programa.getDescripcion())
+                .urlPlanEstudio(programa.getUrlPlanEstudio())
+                .unidadPosgradoNombre(programa.getUnidadPosgrado().getNombre())
+                .tipoProgramaNombre(programa.getTipoPrograma().getNombreprograma())
+                .build();
+
+            return ResponseEntity.ok(programaResponse);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -89,7 +139,6 @@ public class ProgramaEstudioService {
         if (programaOpt.isPresent()) {
             ProgramaEstudio programaExistente = programaOpt.get();
 
-            // Verificar si el usuario es SuperAdmin o Admin de la unidad
             UnidadPosgrado unidadPosgrado;
             if (usuarioLogueado.getRole().getName().equals("SUPERADMIN")) {
                 if (request.getUnidadPosgradoId() == null) {

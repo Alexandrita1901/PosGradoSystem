@@ -2,13 +2,14 @@ package FCA.Sistema.Web.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.TipoProgramaRequest;
+import FCA.Sistema.Web.DTO.TipoProgramaResponse;
 import FCA.Sistema.Web.Entity.TipoPrograma;
-
 import FCA.Sistema.Web.Repository.TipoProgramaRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public class TipoProgramaService {
 
     private final TipoProgramaRepository tipoProgramaRepository;
- 
 
     // Crear un nuevo Tipo de Programa
     public ResponseEntity<String> crearTipoPrograma(TipoProgramaRequest request) {
@@ -29,16 +29,33 @@ public class TipoProgramaService {
     }
 
     // Listar todos los Tipos de Programa
-    public ResponseEntity<List<TipoPrograma>> listarTiposPrograma() {
+    public ResponseEntity<List<TipoProgramaResponse>> listarTiposPrograma() {
         List<TipoPrograma> tiposPrograma = tipoProgramaRepository.findAll();
-        return ResponseEntity.ok(tiposPrograma);
+
+        // Convertimos la lista de entidades a DTOs
+        List<TipoProgramaResponse> tipoProgramaResponses = tiposPrograma.stream()
+            .map(tipoPrograma -> TipoProgramaResponse.builder()
+                .id(tipoPrograma.getId())
+                .nombreprograma(tipoPrograma.getNombreprograma())
+                .build())
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(tipoProgramaResponses);
     }
 
     // Obtener un Tipo de Programa por ID
-    public ResponseEntity<TipoPrograma> obtenerTipoProgramaPorId(Integer id) {
+    public ResponseEntity<TipoProgramaResponse> obtenerTipoProgramaPorId(Integer id) {
         Optional<TipoPrograma> tipoProgramaOpt = tipoProgramaRepository.findById(id);
         if (tipoProgramaOpt.isPresent()) {
-            return ResponseEntity.ok(tipoProgramaOpt.get());
+            TipoPrograma tipoPrograma = tipoProgramaOpt.get();
+
+            // Convertimos la entidad a DTO
+            TipoProgramaResponse tipoProgramaResponse = TipoProgramaResponse.builder()
+                .id(tipoPrograma.getId())
+                .nombreprograma(tipoPrograma.getNombreprograma())
+                .build();
+
+            return ResponseEntity.ok(tipoProgramaResponse);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

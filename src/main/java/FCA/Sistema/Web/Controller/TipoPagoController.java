@@ -2,13 +2,13 @@ package FCA.Sistema.Web.Controller;
 
 import java.security.Principal;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import FCA.Sistema.Web.DTO.TipoPagoRequest;
-import FCA.Sistema.Web.Entity.TipoPago;
+import FCA.Sistema.Web.DTO.TipoPagoResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
@@ -23,7 +23,7 @@ public class TipoPagoController {
     private final TipoPagoService tipoPagoService;
     private final UserRepository userRepository;
 	private final PermisoService permisoService;
-	
+
     @PostMapping("/crear")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
     public ResponseEntity<String> crearTipoPago(@RequestBody TipoPagoRequest request, Principal principal) {
@@ -38,7 +38,7 @@ public class TipoPagoController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<List<TipoPago>> listarTiposPago(Principal principal) {
+    public ResponseEntity<List<TipoPagoResponse>> listarTiposPago(Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -50,7 +50,7 @@ public class TipoPagoController {
 
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<TipoPago> obtenerTipoPagoPorId(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<TipoPagoResponse> obtenerTipoPagoPorId(@PathVariable Integer id, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 

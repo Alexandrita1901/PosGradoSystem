@@ -64,7 +64,7 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Permiso> permisos;
-
+   
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 

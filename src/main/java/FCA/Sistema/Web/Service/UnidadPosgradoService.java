@@ -2,10 +2,13 @@ package FCA.Sistema.Web.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.UnidadPosgradoRequest;
+import FCA.Sistema.Web.DTO.UnidadPosgradoResponse;
 import FCA.Sistema.Web.Entity.UnidadPosgrado;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UnidadPosgradoRepository;
@@ -24,15 +27,31 @@ public class UnidadPosgradoService {
 		return ResponseEntity.ok("Unidad de Posgrado creada exitosamente.");
 	}
 
-	public ResponseEntity<List<UnidadPosgrado>> listarUnidades(User usuarioLogueado) {
+	public ResponseEntity<List<UnidadPosgradoResponse>> listarUnidades(User usuarioLogueado) {
 		List<UnidadPosgrado> unidades = unidadPosgradoRepository.findAll();
-		return ResponseEntity.ok(unidades);
+
+		// Convertir la lista de entidades a DTOs
+		List<UnidadPosgradoResponse> unidadResponses = unidades.stream().map(unidad -> UnidadPosgradoResponse.builder()
+			.id(unidad.getId())
+			.nombre(unidad.getNombre())
+			.build())
+		.collect(Collectors.toList());
+
+		return ResponseEntity.ok(unidadResponses);
 	}
 
-	public ResponseEntity<UnidadPosgrado> obtenerUnidadPorId(Integer id, User usuarioLogueado) {
+	public ResponseEntity<UnidadPosgradoResponse> obtenerUnidadPorId(Integer id, User usuarioLogueado) {
 		Optional<UnidadPosgrado> unidadOpt = unidadPosgradoRepository.findById(id);
 		if (unidadOpt.isPresent()) {
-			return ResponseEntity.ok(unidadOpt.get());
+			UnidadPosgrado unidad = unidadOpt.get();
+
+			// Convertir la entidad a DTO
+			UnidadPosgradoResponse unidadResponse = UnidadPosgradoResponse.builder()
+				.id(unidad.getId())
+				.nombre(unidad.getNombre())
+				.build();
+
+			return ResponseEntity.ok(unidadResponse);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
@@ -59,3 +78,4 @@ public class UnidadPosgradoService {
 		}
 	}
 }
+

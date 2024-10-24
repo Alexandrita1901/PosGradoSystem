@@ -31,7 +31,5 @@ public class UnidadPosgrado {
     
     @OneToMany(mappedBy = "unidadPosgrado")
     private List<ProgramaEstudio> programasEstudio;
-
-	// @Column(nullable = true)
-	   //private String logo; 
 }
+

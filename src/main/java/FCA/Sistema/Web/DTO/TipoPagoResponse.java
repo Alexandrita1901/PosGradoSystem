@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DocumentoAdministrativoRequest {
-	private Integer tipoDocumentoId;
-	private Integer unidadPosgradoId;
-	private String titulo;
-	private String urlDocumento;
-	private Boolean validado;
+public class TipoPagoResponse {
+    private Integer id;
+    private String nombre;
+    private Boolean esRecurrentePorSemestre;
 }

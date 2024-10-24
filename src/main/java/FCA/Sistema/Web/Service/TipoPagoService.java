@@ -2,11 +2,13 @@ package FCA.Sistema.Web.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.TipoPagoRequest;
+import FCA.Sistema.Web.DTO.TipoPagoResponse;
 import FCA.Sistema.Web.Entity.TipoPago;
 import FCA.Sistema.Web.Repository.TipoPagoRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,16 +30,35 @@ public class TipoPagoService {
     }
 
     // Listar todos los Tipos de Pago
-    public ResponseEntity<List<TipoPago>> listarTiposPago() {
+    public ResponseEntity<List<TipoPagoResponse>> listarTiposPago() {
         List<TipoPago> tiposPago = tipoPagoRepository.findAll();
-        return ResponseEntity.ok(tiposPago);
+
+        // Convertir la lista de entidades a DTOs
+        List<TipoPagoResponse> tipoPagoResponses = tiposPago.stream()
+            .map(tipoPago -> TipoPagoResponse.builder()
+                .id(tipoPago.getId())
+                .nombre(tipoPago.getNombre())
+                .esRecurrentePorSemestre(tipoPago.getEsRecurrentePorSemestre())
+                .build())
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok(tipoPagoResponses);
     }
 
     // Obtener un Tipo de Pago por ID
-    public ResponseEntity<TipoPago> obtenerTipoPagoPorId(Integer id) {
+    public ResponseEntity<TipoPagoResponse> obtenerTipoPagoPorId(Integer id) {
         Optional<TipoPago> tipoPagoOpt = tipoPagoRepository.findById(id);
         if (tipoPagoOpt.isPresent()) {
-            return ResponseEntity.ok(tipoPagoOpt.get());
+            TipoPago tipoPago = tipoPagoOpt.get();
+
+            // Convertir la entidad a DTO
+            TipoPagoResponse tipoPagoResponse = TipoPagoResponse.builder()
+                .id(tipoPago.getId())
+                .nombre(tipoPago.getNombre())
+                .esRecurrentePorSemestre(tipoPago.getEsRecurrentePorSemestre())
+                .build();
+
+            return ResponseEntity.ok(tipoPagoResponse);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

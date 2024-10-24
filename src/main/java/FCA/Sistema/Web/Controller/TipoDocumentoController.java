@@ -6,8 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import FCA.Sistema.Web.DTO.TipoDocumentoRequest;
-import FCA.Sistema.Web.Entity.TipoDocumento;
+import FCA.Sistema.Web.DTO.TipoDocumentoResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
@@ -38,7 +39,7 @@ public class TipoDocumentoController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<List<TipoDocumento>> listarTiposDocumento(Principal principal) {
+    public ResponseEntity<List<TipoDocumentoResponse>> listarTiposDocumento(Principal principal) {
         User usuarioLogueado = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -51,7 +52,7 @@ public class TipoDocumentoController {
 
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAnyAuthority('SUPERADMIN')")
-    public ResponseEntity<TipoDocumento> obtenerTipoDocumentoPorId(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<TipoDocumentoResponse> obtenerTipoDocumentoPorId(@PathVariable Integer id, Principal principal) {
         User usuarioLogueado = userRepository.findByUsername(principal.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 

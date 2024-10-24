@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import FCA.Sistema.Web.DTO.UserRequest;
+import FCA.Sistema.Web.DTO.UserResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
@@ -36,32 +37,35 @@ public class UserController {
 
 		return userService.crearUsuarioParaUnidad(request, usuarioLogueado);
 	}
-
 	@GetMapping("/listar")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-	public ResponseEntity<List<User>> listarUsuarios(Principal principal) {
-		User usuarioLogueado = userRepository.findByUsername(principal.getName())
-				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
+	public ResponseEntity<List<UserResponse>> listarUsuarios(Principal principal) {
+	    User usuarioLogueado = userRepository.findByUsername(principal.getName())
+	            .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
-		if (!permisoService.tienePermisoListar(usuarioLogueado)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+	    if (!permisoService.tienePermisoListar(usuarioLogueado)) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+	    }
 
-		return userService.listarUsuarios(usuarioLogueado);
+	    // Llamamos al servicio que ahora devuelve una lista de UserResponse
+	    return userService.listarUsuarios(usuarioLogueado);
 	}
+
 
 	@GetMapping("/listar/{id}")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")
-	public ResponseEntity<User> obtenerUsuarioPorId(@PathVariable Integer id, Principal principal) {
-		User usuarioLogueado = userRepository.findByUsername(principal.getName())
-				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
+	public ResponseEntity<UserResponse> obtenerUsuarioPorId(@PathVariable Integer id, Principal principal) {
+	    User usuarioLogueado = userRepository.findByUsername(principal.getName())
+	            .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
-		if (!permisoService.tienePermisoListar(usuarioLogueado)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
-		}
+	    if (!permisoService.tienePermisoListar(usuarioLogueado)) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+	    }
 
-		return userService.obtenerUsuarioPorId(id, usuarioLogueado);
+	    // Llamamos al servicio que ahora devuelve un UserResponse
+	    return userService.obtenerUsuarioPorId(id, usuarioLogueado);
 	}
+
 
 	@PutMapping("/actualizar/{id}")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")

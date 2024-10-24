@@ -2,14 +2,13 @@ package FCA.Sistema.Web.Controller;
 
 import java.security.Principal;
 import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import FCA.Sistema.Web.DTO.SemestreRequest;
-import FCA.Sistema.Web.Entity.Semestre;
+import FCA.Sistema.Web.DTO.SemestreResponse;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PermisoService;
@@ -39,7 +38,7 @@ public class SemestreController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    public ResponseEntity<List<Semestre>> listarSemestres(Principal principal) {
+    public ResponseEntity<List<SemestreResponse>> listarSemestres(Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
@@ -51,7 +50,7 @@ public class SemestreController {
 
     @GetMapping("/listar/{id}")
     @PreAuthorize("hasAuthority('SUPERADMIN')")
-    public ResponseEntity<Semestre> obtenerSemestrePorId(@PathVariable Integer id, Principal principal) {
+    public ResponseEntity<SemestreResponse> obtenerSemestrePorId(@PathVariable Integer id, Principal principal) {
     	User usuarioLogueado = userRepository.findByUsername(principal.getName())
 				.orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
 
