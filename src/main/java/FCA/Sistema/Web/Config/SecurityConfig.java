@@ -26,6 +26,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authRequest -> authRequest
             .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+            .requestMatchers("/historialSemestres/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
             .requestMatchers("/documentos/**").hasAnyAuthority("ADMIN", "SUPERADMIN","USER")
             .requestMatchers("/estudiantes/**").hasAnyAuthority("ADMIN", "SUPERADMIN","USER")
             .requestMatchers("/tipopago/**").hasAuthority("SUPERADMIN")

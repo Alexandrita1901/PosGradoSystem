@@ -2,8 +2,6 @@ package FCA.Sistema.Web.DTO;
 
 import java.time.LocalDate;
 
-import FCA.Sistema.Web.Entity.Estudiantes;
-import FCA.Sistema.Web.Entity.Semestre;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistorialSemestreRequest {
-    private Estudiantes estudiante;
-    private Semestre semestre;
+public class HistorialSemestreResponse {
+    private Integer id;
+    private String semestreNombre;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 }

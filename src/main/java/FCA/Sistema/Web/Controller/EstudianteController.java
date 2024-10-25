@@ -77,6 +77,23 @@ public class EstudianteController {
 
         return estudianteService.actualizarEstudiante(id, request, usuarioLogueado);
     }
+    
+    @PutMapping("/actualizar-semestre/{id}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN', 'SUPERADMIN')")
+    public ResponseEntity<String> actualizarSemestreEstudiante(@PathVariable Integer id,
+                                                               @RequestParam Integer nuevoSemestreId, 
+                                                               Principal principal) {
+        User usuarioLogueado = userRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario logueado no encontrado"));
+
+        // Permiso para actualizar el semestre (USER, ADMIN, SUPERADMIN)
+        if (!permisoService.tienePermisoEditar(usuarioLogueado)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para editar el semestre.");
+        }
+
+        return estudianteService.actualizarSemestreEstudiante(id, nuevoSemestreId, usuarioLogueado);
+    }
+    
 
     @DeleteMapping("/eliminar/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERADMIN')")

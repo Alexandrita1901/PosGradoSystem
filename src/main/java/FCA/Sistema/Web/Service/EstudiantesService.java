@@ -1,5 +1,6 @@
 package FCA.Sistema.Web.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,11 +11,14 @@ import org.springframework.stereotype.Service;
 
 import FCA.Sistema.Web.DTO.EstudianteRequest;
 import FCA.Sistema.Web.DTO.EstudianteResponse;
+import FCA.Sistema.Web.DTO.HistorialSemestreRequest;
 import FCA.Sistema.Web.Entity.Estudiantes;
+import FCA.Sistema.Web.Entity.HistorialSemestre;
 import FCA.Sistema.Web.Entity.ProgramaEstudio;
 import FCA.Sistema.Web.Entity.Semestre;
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.EstudiantesRepository;
+import FCA.Sistema.Web.Repository.HistorialSemestreRepository;
 import FCA.Sistema.Web.Repository.ProgramaEstudioRepository;
 import FCA.Sistema.Web.Repository.SemestreRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +27,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EstudiantesService {
 
-	    private final EstudiantesRepository estudianteRepository;
-	    private final ProgramaEstudioRepository programaEstudioRepository;
-	    private final SemestreRepository semestreRepository;
+	private final EstudiantesRepository estudianteRepository;
+    private final ProgramaEstudioRepository programaEstudioRepository;
+    private final SemestreRepository semestreRepository;
+    private final HistorialSemestreRepository historialSemestreRepository;
+    private final HistorialSemestreService historialSemestreService;
 
-	    // Crear un nuevo estudiante (permiso para USER, ADMIN y SUPERADMIN)
+	
 	    public ResponseEntity<String> crearEstudiante(EstudianteRequest request, User usuarioLogueado) {
 	        Optional<ProgramaEstudio> programaEstudioOpt = programaEstudioRepository.findById(request.getProgramaEstudioId());
 	        if (!programaEstudioOpt.isPresent()) {
@@ -64,9 +70,20 @@ public class EstudiantesService {
 	                .totalSemestres(request.getTotalSemestres())
 	                .build();
 
+	        // Guardar el estudiante
 	        estudianteRepository.save(estudiante);
-	        return ResponseEntity.ok("Estudiante creado exitosamente.");
+
+	        // Crear una entrada en el historial de semestres usando DTO
+	        HistorialSemestreRequest historialRequest = new HistorialSemestreRequest(
+	                estudiante, semestreIngresoOpt.get(), semestreIngresoOpt.get().getFechaInicio(), semestreIngresoOpt.get().getFechaFin());
+
+	        historialSemestreService.crearHistorialSemestre(historialRequest);
+
+
+	        return ResponseEntity.ok("Estudiante y historial de semestre creados exitosamente.");
 	    }
+
+
 
 	    public ResponseEntity<List<EstudianteResponse>> listarEstudiantes(User usuarioLogueado) {
 	        List<Estudiantes> estudiantes;
@@ -160,6 +177,40 @@ public class EstudiantesService {
 	            return ResponseEntity.ok("Estudiante actualizado exitosamente.");
 	        } else {
 	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Estudiante no encontrado.");
+	        }
+	    }
+	    
+	 // Actualizar semestre de un estudiante (permiso para USER, ADMIN y SUPERADMIN)
+	    public ResponseEntity<String> actualizarSemestreEstudiante(Integer id, Integer nuevoSemestreId, User usuarioLogueado) {
+	        Optional<Estudiantes> estudianteOpt = estudianteRepository.findById(id);
+	        Optional<Semestre> nuevoSemestreOpt = semestreRepository.findById(nuevoSemestreId);
+
+	        if (estudianteOpt.isPresent() && nuevoSemestreOpt.isPresent()) {
+	            Estudiantes estudiante = estudianteOpt.get();
+	            Semestre nuevoSemestre = nuevoSemestreOpt.get();
+
+	            // Verificar si el semestre ya terminó y actualizar historial
+	            HistorialSemestre historialActual = historialSemestreRepository.findByEstudianteAndSemestre(estudiante, estudiante.getSemestreActual());
+	            if (historialActual != null && historialActual.getFechaFin() == null) {
+	                historialActual.setFechaFin(LocalDate.now());
+	                historialSemestreRepository.save(historialActual); // Marcar semestre actual como terminado
+	            }
+
+	            // Actualizar el semestre del estudiante
+	            estudiante.setSemestreActual(nuevoSemestre);
+	            estudianteRepository.save(estudiante);
+
+	            // Crear un nuevo historial de semestre para el nuevo semestre
+	            HistorialSemestre nuevoHistorial = HistorialSemestre.builder()
+	                    .estudiante(estudiante)
+	                    .semestre(nuevoSemestre)
+	                    .fechaInicio(nuevoSemestre.getFechaInicio())
+	                    .build();
+	            historialSemestreRepository.save(nuevoHistorial);
+
+	            return ResponseEntity.ok("Semestre del estudiante actualizado exitosamente.");
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Estudiante o semestre no encontrado.");
 	        }
 	    }
 
