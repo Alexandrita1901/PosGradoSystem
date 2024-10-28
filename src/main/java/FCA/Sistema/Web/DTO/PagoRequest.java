@@ -1,14 +1,20 @@
 package FCA.Sistema.Web.DTO;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-//@NoArgsConstructor
-//@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class PagoRequest {
+	
+	    private Integer estudianteId;
+	    private Integer tipoPagoId;
+	    private Integer tipoDocumentoId;
+	    private Double monto;
+	    private String observacion;
+	    private String urlDocumento;
+	}
+ 
 
-}

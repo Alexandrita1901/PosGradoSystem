@@ -28,34 +28,33 @@ public class Pago {
 
     @ManyToOne
     @JoinColumn(name = "estudiante_id", nullable = false)
-    private Estudiantes estudiante;  // El estudiante asociado al pago
+    private Estudiantes estudiante; 
 
     @ManyToOne
     @JoinColumn(name = "semestre_id", nullable = false)
-    private Semestre semestre;  // El semestre al que está asociado el pago
-
+    private Semestre semestre; 
     @ManyToOne
     @JoinColumn(name = "tipo_pago_id", nullable = false)
-    private TipoPago tipoPago;  // El tipo de pago que se realiza (mensualidad, matrícula, etc.)
+    private TipoPago tipoPago; 
 
     @ManyToOne
     @JoinColumn(name = "tipo_documento_id", nullable = false)
-    private TipoDocumento tipoDocumento;  // Documento asociado (voucher, recibo, etc.)
+    private TipoDocumento tipoDocumento;
 
     @Column(nullable = false)
-    private Double monto;  // Monto del pago
+    private Double monto;
 
     @Column(nullable = false)
-    private String estado;  // Estado del pago (pagado, pendiente, etc.)
+    private String estado; 
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    private String observacion;  // Observaciones adicionales del pago
+    private String observacion;
 
     @Column(nullable = true)
-    private String urlDocumento;  // URL del documento asociado (voucher, recibo, etc.)
+    private String urlDocumento;
 
     @Column(nullable = false)
-    private LocalDate fechaPago;  // Fecha en la que se realizó el pago
+    private LocalDate fechaPago;
 }
 
 

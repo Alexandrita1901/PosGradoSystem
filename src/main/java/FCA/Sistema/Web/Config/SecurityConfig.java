@@ -21,26 +21,31 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authProvider;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(authRequest -> authRequest
-            .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-            .requestMatchers("/historialSemestres/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-            .requestMatchers("/documentos/**").hasAnyAuthority("ADMIN", "SUPERADMIN","USER")
-            .requestMatchers("/estudiantes/**").hasAnyAuthority("ADMIN", "SUPERADMIN","USER")
-            .requestMatchers("/tipopago/**").hasAuthority("SUPERADMIN")
-            .requestMatchers("/tipodocumento/**").hasAuthority("SUPERADMIN")
-            .requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
-            .requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-            .requestMatchers("/tipoprograma/**").hasAnyAuthority("SUPERADMIN")  
-            .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN") 
-            .requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
-            .sessionManagement(
-                sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        return http.csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authRequest -> authRequest
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").authenticated()
+                .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+                .requestMatchers("/historialSemestres/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+                .requestMatchers("/documentos/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
+                .requestMatchers("/estudiantes/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
+                .requestMatchers("/pagos/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
+                .requestMatchers("/tipopago/**").hasAuthority("SUPERADMIN")
+                .requestMatchers("/tipodocumento/**").hasAuthority("SUPERADMIN")
+                .requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
+                .requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+                .requestMatchers("/tipoprograma/**").hasAnyAuthority("SUPERADMIN")  
+                .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN") 
+                .requestMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated())
+            .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authProvider)
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
     }
+
+
 
 }
 
