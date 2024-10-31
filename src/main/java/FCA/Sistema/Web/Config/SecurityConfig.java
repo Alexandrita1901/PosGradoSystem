@@ -36,16 +36,16 @@ public class SecurityConfig {
                 .requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
                 .requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
                 .requestMatchers("/tipoprograma/**").hasAnyAuthority("SUPERADMIN")  
-                .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN") 
+                .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+                .requestMatchers("/semestres/**").hasAnyAuthority("SUPERADMIN")
+                .requestMatchers("/documentosEstudiantes/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/dashboard/options").authenticated()
                 .anyRequest().authenticated())
             .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
-
-
-
 }
 

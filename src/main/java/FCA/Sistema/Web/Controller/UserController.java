@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/usuarios")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class UserController {
 
 	private final UserRepository userRepository;
@@ -93,4 +94,5 @@ public class UserController {
 
 		return userService.eliminarUsuario(id, usuarioLogueado);
 	}
+	
 }

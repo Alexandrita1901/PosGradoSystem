@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/documentosEstudiantes")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class DocumentoEstudianteController {
 
     private final DocumentoEstudianteService documentoEstudianteService;

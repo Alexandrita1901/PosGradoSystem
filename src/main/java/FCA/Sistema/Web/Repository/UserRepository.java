@@ -29,4 +29,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	Optional<User> findByIdAndRoleName(Integer adminId, String string);
 
+	Optional<User> findByCorreo(String correo);
+
+	Optional<User> findByResetToken(String token);
+
+	@Query("SELECT u.role.name FROM User u WHERE u.username = :username")
+	Optional<String> findRoleNameByUsername(@Param("username") String username);
+
 }

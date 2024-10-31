@@ -61,34 +61,49 @@ public class AuthService {
 	}
 
 	public AuthResponse registerSuperAdmin(RegisterRequest request) {
-		logger.info("Registrando SuperAdmin: {}", request.getUsername());
+	    logger.info("Registrando SuperAdmin con username predeterminado: SuperAdmin");
 
-		Role superadminRole = roleRepository.findByName("SUPERADMIN").orElseThrow(() -> {
-			logger.error("Rol SUPERADMIN no encontrado");
-			return new RuntimeException("Role SUPERADMIN not found");
-		});
+	    Role superadminRole = roleRepository.findByName("SUPERADMIN").orElseThrow(() -> {
+	        logger.error("Rol SUPERADMIN no encontrado");
+	        return new RuntimeException("Role SUPERADMIN not found");
+	    });
 
-		User SuperadminUser = User.builder().username(request.getUsername())
-				.password(passwordEncoder.encode(request.getPassword())).apellidos(request.getApellidos())
-				.dni(request.getDni()).correo(request.getCorreo()).nombres(request.getNombres())
-				.contacto(request.getContacto()).role(superadminRole).build();
+	    // Usamos "SuperAdmin" como nombre de usuario fijo
+	    User superadminUser = User.builder()
+	            .username("SuperAdmin")  // Aquí se asigna directamente el username fijo
+	            .password(passwordEncoder.encode(request.getPassword()))
+	            .apellidos(request.getApellidos())
+	            .dni(request.getDni())
+	            .correo(request.getCorreo())
+	            .nombres(request.getNombres())
+	            .contacto(request.getContacto())
+	            .role(superadminRole)
+	            .build();
 
-		userRepository.save(SuperadminUser);
-		roleRepository.save(superadminRole);
+	    userRepository.save(superadminUser);
+	    roleRepository.save(superadminRole);
 
-		Permiso permisosSuperAdmin = Permiso.builder().user(SuperadminUser).permisoCrear(true).permisoEditar(true)
-				.permisoEliminar(true).permisoListar(true).build();
+	    Permiso permisosSuperAdmin = Permiso.builder()
+	            .user(superadminUser)
+	            .permisoCrear(true)
+	            .permisoEditar(true)
+	            .permisoEliminar(true)
+	            .permisoListar(true)
+	            .build();
 
-		permisoRepository.save(permisosSuperAdmin);
+	    permisoRepository.save(permisosSuperAdmin);
 
-		String accessToken = jwtService.getToken(SuperadminUser);
-		String refreshToken = jwtService.generateRefreshToken(SuperadminUser);
-		SuperadminUser.setRefreshToken(refreshToken);
-		userRepository.save(SuperadminUser);
+	    String accessToken = jwtService.getToken(superadminUser);
+	    String refreshToken = jwtService.generateRefreshToken(superadminUser);
+	    superadminUser.setRefreshToken(refreshToken);
+	    userRepository.save(superadminUser);
 
-		logger.info("SuperAdmin {} registrado con éxito", SuperadminUser.getUsername());
+	    logger.info("SuperAdmin registrado con éxito, username: {}", superadminUser.getUsername());
 
-		return AuthResponse.builder().token(accessToken).refreshToken(refreshToken).build();
+	    return AuthResponse.builder()
+	            .token(accessToken)
+	            .refreshToken(refreshToken)
+	            .build();
 	}
 
 	public void logout(String username) {

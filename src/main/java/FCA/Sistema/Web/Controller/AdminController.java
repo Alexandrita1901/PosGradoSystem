@@ -15,8 +15,9 @@ import FCA.Sistema.Web.Service.PermisoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admins")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class AdminController {
 
 	private final UserRepository userRepository;

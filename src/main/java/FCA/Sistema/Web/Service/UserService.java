@@ -16,8 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -161,4 +163,66 @@ public class UserService {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
+	/*public ResponseEntity<String> solicitarRestablecimiento(String correo) {
+        Optional<User> usuarioOpt = userRepository.findByCorreo(correo);
+        if (!usuarioOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado.");
+        }
+
+        User usuario = usuarioOpt.get();
+        String token = UUID.randomUUID().toString();
+        usuario.setResetToken(token);
+        usuario.setResetTokenExpiration(LocalDateTime.now().plusHours(1));
+        userRepository.save(usuario);
+
+       
+        enviarEmailRestablecimiento(usuario.getCorreo(), token);
+
+        return ResponseEntity.ok("Se ha enviado un correo con el enlace de restablecimiento.");
+    }*/
+	
+	public ResponseEntity<String> solicitarRestablecimiento(String correo) {
+	    User usuario = userRepository.findByCorreo(correo)
+	        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+	    
+	    // Generar el token de restablecimiento (por ejemplo, usando UUID)
+	    String token = UUID.randomUUID().toString();
+	    
+	    // Guardar el token en la base de datos o en una entidad temporal para pruebas
+	    // usuario.setResetToken(token);
+	    userRepository.save(usuario);
+
+	    // Para pruebas, devolver el token en la respuesta
+	    return ResponseEntity.ok("Token de restablecimiento: " + token);
+	}
+
+
+    private void enviarEmailRestablecimiento(String correo, String token) {
+    
+        System.out.println("Enlace de restablecimiento: http://localhost:8080/usuarios/restablecer?token=" + token);
+    }
+
+    public ResponseEntity<String> restablecerConToken(String token, String nuevaContrasena) {
+        Optional<User> usuarioOpt = userRepository.findByResetToken(token);
+        if (!usuarioOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Token inválido.");
+        }
+
+        User usuario = usuarioOpt.get();
+
+      
+        if (usuario.getResetTokenExpiration().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("El token ha expirado.");
+        }
+
+     
+        usuario.setPassword(passwordEncoder.encode(nuevaContrasena));
+        usuario.setResetToken(null); 
+        usuario.setResetTokenExpiration(null);
+        userRepository.save(usuario);
+
+        return ResponseEntity.ok("Contraseña restablecida exitosamente.");
+    }
+
 }

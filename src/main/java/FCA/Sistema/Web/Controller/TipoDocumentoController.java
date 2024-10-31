@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/tipodocumento")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class TipoDocumentoController {
 
     private final TipoDocumentoService tipoDocumentoService;

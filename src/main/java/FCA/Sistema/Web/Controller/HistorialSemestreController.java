@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/historialSemestres")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class HistorialSemestreController {
 
     private final HistorialSemestreService historialSemestreService;

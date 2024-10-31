@@ -1,14 +1,14 @@
 package FCA.Sistema.Web.Controller;
 
 import java.security.Principal;
-import java.util.List;
+
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import FCA.Sistema.Web.DTO.PagoRequest;
-import FCA.Sistema.Web.DTO.PagoResponse;
+
 import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Repository.UserRepository;
 import FCA.Sistema.Web.Service.PagoService;
@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/pagos")
 @RequiredArgsConstructor
+@CrossOrigin(origins = {"http://localhost:4200"})
 public class PagoController {
 
     private final PagoService pagoService;

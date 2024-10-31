@@ -1,4 +1,5 @@
 package FCA.Sistema.Web.Entity;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,7 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user", uniqueConstraints = { @UniqueConstraint(columnNames = { "username" }) })
+@Table(name = "user")
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 1L;
@@ -29,7 +30,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -60,6 +61,11 @@ public class User implements UserDetails {
 
     private String refreshToken;
     private boolean loggedOut;
+    @Column(nullable = true, unique = true)
+    private String resetToken;
+
+    @Column(nullable = true)
+    private LocalDateTime resetTokenExpiration;
     
     @JsonIgnore
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -100,4 +106,8 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.username;
     }
+
+	public String getEmail() {
+		return this.correo;
+	}
 }
