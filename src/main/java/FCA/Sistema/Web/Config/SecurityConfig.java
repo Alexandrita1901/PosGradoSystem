@@ -1,6 +1,5 @@
 package FCA.Sistema.Web.Config;
 
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,11 +20,14 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authProvider;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authRequest -> authRequest
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").authenticated()
+                // Permitir acceso público a Swagger para documentación
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                // Configurar los accesos de los roles a los diferentes endpoints
                 .requestMatchers("/admin/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
                 .requestMatchers("/historialSemestres/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
                 .requestMatchers("/documentos/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
@@ -35,12 +37,14 @@ public class SecurityConfig {
                 .requestMatchers("/tipodocumento/**").hasAuthority("SUPERADMIN")
                 .requestMatchers("/unidades/**").hasAuthority("SUPERADMIN")
                 .requestMatchers("/usuarios/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-                .requestMatchers("/tipoprograma/**").hasAnyAuthority("SUPERADMIN")  
+                .requestMatchers("/tipoprograma/**").hasAuthority("SUPERADMIN")
                 .requestMatchers("/programas/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
-                .requestMatchers("/semestres/**").hasAnyAuthority("SUPERADMIN")
+                .requestMatchers("/semestres/**").hasAuthority("SUPERADMIN")
                 .requestMatchers("/documentosEstudiantes/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
-                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()  // Permitir acceso público a autenticación
                 .requestMatchers("/dashboard/options").authenticated()
+                .requestMatchers("/auth/current-user").authenticated()
+
                 .anyRequest().authenticated())
             .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(authProvider)
@@ -48,4 +52,3 @@ public class SecurityConfig {
             .build();
     }
 }
-

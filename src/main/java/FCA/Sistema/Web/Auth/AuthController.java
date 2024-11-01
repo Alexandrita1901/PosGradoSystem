@@ -7,6 +7,7 @@ import FCA.Sistema.Web.DTO.LoginRequest;
 import FCA.Sistema.Web.DTO.PasswordResetRequest;
 import FCA.Sistema.Web.DTO.RegisterRequest;
 import FCA.Sistema.Web.DTO.RestablecerContrasenaRequest;
+import FCA.Sistema.Web.Entity.User;
 import FCA.Sistema.Web.Service.AuthService;
 import FCA.Sistema.Web.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin("*")
 public class AuthController {
 
     private final AuthService authService;
@@ -44,5 +45,12 @@ public class AuthController {
     public ResponseEntity<String> restablecerConToken(@RequestBody RestablecerContrasenaRequest request) {
         return userService.restablecerConToken(request.getToken(), request.getNuevaContrasena());
     }
+    
+    @GetMapping("/current-user")
+    public ResponseEntity<User> getCurrentUser() {
+        User currentUser = authService.getCurrentUser();
+        return ResponseEntity.ok(currentUser);
+    }
+
 
 }

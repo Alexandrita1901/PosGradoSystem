@@ -4,9 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import FCA.Sistema.Web.Auth.AuthResponse;
 import FCA.Sistema.Web.DTO.LoginRequest;
@@ -136,5 +138,22 @@ public class AuthService {
 		logger.debug("Nuevo token de acceso generado: {}", newAccessToken);
 
 		return AuthResponse.builder().token(newAccessToken).refreshToken(refreshToken).build();
+	}
+	
+	public User getCurrentUser() {
+	    // Obtener el objeto principal de autenticación
+	    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+	    String username;
+	    if (principal instanceof UserDetails) {
+	        username = ((UserDetails) principal).getUsername();
+	    } else if (principal instanceof String) {
+	        username = (String) principal;
+	    } else {
+	        throw new UsernameNotFoundException("User not found");
+	    }
+
+	    return userRepository.findByUsername(username)
+	            .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 	}
 }
